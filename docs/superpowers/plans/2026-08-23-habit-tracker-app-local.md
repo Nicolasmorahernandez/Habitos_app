@@ -3444,6 +3444,21 @@ git commit -m "feat: make the app an installable PWA"
 
 ## Task 24: Verificación final
 
+**Deuda de accesibilidad acumulada (fuera de alcance de v1, registrada aquí para
+no perderla):** tres huecos de la misma clase, todos deliberadamente diferidos
+durante la implementación en vez de arreglados fuera de spec:
+1. El contador de `HabitRow` (Unidad F) no anuncia por `aria-live` el cambio de
+   "5/8" a "6/8".
+2. El heatmap (Task 19) es una lista plana de hasta ~182 botones sin
+   `role="grid"`/`role="gridcell"` ni navegación 2D por teclado.
+3. (Ya resuelto) los mensajes de error de `HabitForm`/`SettingsScreen` sí tienen
+   `role="alert"` desde el commit `6ded20f`.
+
+Ninguno bloquea el uso con lector de pantalla —los elementos son accesibles,
+solo no anuncian cambios dinámicos u ofrecen navegación optimizada—, pero
+conviene una pasada de accesibilidad dedicada tras la v1 en vez de seguir
+resolviendo esto ad hoc tarea a tarea.
+
 - [ ] **Step 1: Ejecutar toda la batería de tests**
 
 ```bash
