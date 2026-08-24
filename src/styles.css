@@ -214,3 +214,12 @@ h2 {
 .estadisticas { display: flex; justify-content: space-around; text-align: center; }
 .estadisticas .dato { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
 .estadisticas .etiqueta { font-size: 0.75rem; color: var(--texto-tenue); }
+
+.banner {
+  background: #4a2020;
+  border: 1px solid #7a3333;
+  border-radius: var(--radio);
+  padding: var(--espacio);
+  font-size: 0.85rem;
+  margin-bottom: var(--espacio);
+}
