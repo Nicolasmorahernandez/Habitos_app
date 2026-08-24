@@ -74,4 +74,35 @@ describe('importarJSON', () => {
     await expect(importarJSON('roto')).rejects.toThrow();
     expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Intacto']);
   });
+
+  it('rechaza un hábito mal formado sin tocar la base', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [
+        {
+          id: 'h1', nombre: 'Bueno', tipo: 'booleano', objetivo: null, dias: [1],
+          estado: 'nuevo', orden: 0,
+          creado_en: '2026-08-01T10:00:00.000Z', actualizado_en: '2026-08-01T10:00:00.000Z',
+        },
+        { nombre: 'SinId' },
+      ],
+      entries: [],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
+
+  it('rechaza una anotación mal formada sin tocar la base', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [],
+      entries: [{ habit_id: 'h1', valor: true, actualizado_en: '2026-08-24T10:00:00.000Z' }],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
 });
