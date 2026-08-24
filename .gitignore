@@ -28,3 +28,4 @@ dist-ssr
 .env.local
 .wrangler/
 .DS_Store
+.superpowers/
