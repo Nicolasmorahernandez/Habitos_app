@@ -2071,6 +2071,11 @@ pena añadir una consulta acotada en `entries.ts` solo para este caso. Si en el
 futuro esto se nota lento, la solución es una función tipo `entriesRecientes(habit_id, dias)`
 en `store/entries.ts`, no tocar `core/streaks.ts`.
 
+**Nota de accesibilidad:** `HabitRow` (Unidad F) no anuncia por sí solo el cambio
+de "5/8" a "6/8" al pulsar `+`/`-` en un hábito de cantidad — es presentacional,
+sin `aria-live`. Al montar el contador aquí, envolver el `<span className="progreso">`
+o la fila en un `aria-live="polite"` para que un lector de pantalla note el cambio.
+
 **Files:**
 - Modify: `src/ui/TodayScreen.tsx` (reemplaza el stub del Task 13)
 - Test: `src/ui/TodayScreen.test.tsx`
