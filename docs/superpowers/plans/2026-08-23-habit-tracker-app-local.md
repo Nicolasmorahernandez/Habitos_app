@@ -758,6 +758,10 @@ git add src/core/streaks.ts src/core/streaks.test.ts
 git commit -m "feat(core): add current and longest streak calculation"
 ```
 
+**Tras revisión de calidad:** añadir un test de `currentStreak` para un hábito con
+`dias: []`, esperando `0` aunque existan anotaciones — el camino ya es seguro
+(`previousScheduled` devuelve `null` de inmediato), pero no estaba fijado por ningún test.
+
 ---
 
 ## Task 7: Porcentaje de cumplimiento
@@ -831,10 +835,16 @@ Esperado: FAIL — `Failed to resolve import "./stats"`.
 import type { EntriesByDate, Habit, IsoDate } from './types';
 import { scheduledDates } from './schedule';
 import { isComplete } from './completion';
+import { primerDia } from './streaks';
 
 /**
  * Proporción de días programados cumplidos en el rango, entre 0 y 1.
  * Devuelve 0 si el rango no contiene ningún día programado.
+ *
+ * `desde` se acota al día de creación del hábito: sin esto, una ventana fija
+ * (p. ej. "últimos 30 días") sobre un hábito reciente contaría días previos a
+ * su existencia como programados e incumplidos, deflactando el porcentaje de
+ * forma engañosa incluso con un historial perfecto.
  */
 export function completionRate(
   habit: Habit,
@@ -842,12 +852,17 @@ export function completionRate(
   desde: IsoDate,
   hasta: IsoDate,
 ): number {
-  const dias = scheduledDates(habit, desde, hasta);
+  const inicio = primerDia(habit);
+  const dias = scheduledDates(habit, desde > inicio ? desde : inicio, hasta);
   if (dias.length === 0) return 0;
   const cumplidos = dias.filter((d) => isComplete(habit, entries.get(d))).length;
   return cumplidos / dias.length;
 }
 ```
+
+Nota: `completionRate` depende de `primerDia`, definida en `streaks.ts` (Task 6). Si
+se implementa `stats.ts` antes que `streaks.ts`, hay que invertir el orden o mover
+`primerDia` a un módulo común primero.
 
 - [ ] **Step 4: Ejecutar los tests para verificar que pasan**
 
@@ -860,6 +875,13 @@ Esperado: PASS, 5 tests.
 git add src/core/stats.ts src/core/stats.test.ts
 git commit -m "feat(core): add completion rate over scheduled days"
 ```
+
+**Tras revisión de calidad:** el `completionRate` de arriba ya incluye el acotamiento
+a `primerDia(habit)`. Añadir un test con un hábito creado hace 3 días y récord
+perfecto desde su creación, pidiendo la tasa sobre una ventana de 30 días: debe
+devolver `1`, no un valor deflactado por días previos a la creación (el bug real
+que motivó el cambio: devolvía `0.1538...` sin el acotamiento). Añadir también un
+test de no regresión con un `desde` ya posterior a la creación.
 
 ---
 
@@ -969,6 +991,12 @@ Esperado: PASS, 4 tests.
 git add src/core/heatmap.ts src/core/heatmap.test.ts
 git commit -m "feat(core): add heatmap grid builder"
 ```
+
+**Tras revisión de calidad:** todos los tests de esta unidad usaban hábitos
+`booleano`. Añadir un test con un hábito `cantidad` y `objetivo` (p. ej. 8),
+confirmando que un día con el objetivo alcanzado es `completo: true` y uno por
+debajo es `completo: false` — la vía de integración con `isComplete` no estaba
+cubierta.
 
 ---
 
