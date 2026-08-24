@@ -10,6 +10,8 @@ const booleano: Habit = {
 
 const cantidad: Habit = { ...booleano, id: 'h2', nombre: 'Agua', tipo: 'cantidad', objetivo: 8 };
 
+// Todas las anotaciones llevan habit_id 'h1': isComplete no lo mira, porque asume
+// que la anotación ya viene emparejada con su hábito por quien la busca.
 function entrada(valor: boolean | number): Entry {
   return { habit_id: 'h1', fecha: '2026-08-23', valor, actualizado_en: '2026-08-23T10:00:00.000Z' };
 }
@@ -39,6 +41,11 @@ describe('isComplete', () => {
 
   it('cantidad: un cero no está completo', () => {
     expect(isComplete(cantidad, entrada(0))).toBe(false);
+  });
+
+  it('cantidad: un valor booleano no cuenta como completo', () => {
+    expect(isComplete(cantidad, entrada(true))).toBe(false);
+    expect(isComplete({ ...cantidad, objetivo: 1 }, entrada(true))).toBe(false);
   });
 
   it('cantidad sin objetivo definido: basta con un valor mayor que cero', () => {

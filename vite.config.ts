@@ -7,5 +7,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
     globals: true,
+    // Zona horaria fijada: core/dates depende de la hora local y sus pruebas
+    // solo distinguen local de UTC bajo un desfase conocido y no nulo.
+    // Europe/Madrid es UTC+2 en agosto, la fecha usada en las pruebas.
+    env: { TZ: 'Europe/Madrid' },
   },
 });
