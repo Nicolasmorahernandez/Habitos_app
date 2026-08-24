@@ -1,4 +1,4 @@
-import type { Entry, Habit } from './types';
+import type { Habit, EntriesByHabitId } from './types';
 import { isComplete } from './completion';
 import { minutosDelDia } from './dates';
 
@@ -17,16 +17,17 @@ export interface PuntoProgreso {
  */
 export function progresoDelDia(
   habitosHoy: Habit[],
-  entradas: Map<string, Entry>,
+  entradas: EntriesByHabitId,
 ): PuntoProgreso[] {
   if (habitosHoy.length === 0) return [];
   const paso = 100 / habitosHoy.length;
 
-  const completados = habitosHoy.filter((h) => isComplete(h, entradas.get(h.id)));
-
-  const minutos = completados
-    .map((h) => minutosDelDia(entradas.get(h.id)!.actualizado_en))
-    .sort((a, b) => a - b);
+  const minutos: number[] = [];
+  for (const h of habitosHoy) {
+    const entry = entradas.get(h.id);
+    if (entry && isComplete(h, entry)) minutos.push(minutosDelDia(entry.actualizado_en));
+  }
+  minutos.sort((a, b) => a - b);
 
   let acumulado = 0;
   return minutos.map((m) => {

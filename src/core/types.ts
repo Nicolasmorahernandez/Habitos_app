@@ -33,3 +33,6 @@ export interface Entry {
 
 /** Anotaciones de un hábito indexadas por fecha, tal como las consumen core/streaks y core/stats. */
 export type EntriesByDate = Map<IsoDate, Entry>;
+
+/** Anotaciones de hoy de varios hábitos, indexadas por habit_id — la forma que usa TodayScreen. */
+export type EntriesByHabitId = Map<string, Entry>;
