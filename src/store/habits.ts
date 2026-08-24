@@ -64,6 +64,9 @@ export async function actualizarHabito(
   id: string,
   cambios: Partial<Omit<Habit, 'id' | 'creado_en'>>,
 ): Promise<Habit> {
+  // El get y el put son dos transacciones separadas, no una sola atómica.
+  // Sin riesgo hoy (una sola pestaña, un solo usuario); revisar si el Plan 2
+  // de sincronización introduce un segundo escritor sobre la misma IndexedDB.
   const db = await getDb();
   const actual = await db.get('habits', id);
   if (!actual) throw new Error(`El hábito ${id} no existe`);
