@@ -107,4 +107,17 @@ describe('TodayScreen', () => {
       expect(guardadas[0].fecha).toBe(hoy());
     });
   });
+
+  it('muestra la gráfica de progreso y sube al marcar un hábito', async () => {
+    await crearHabito({ nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: hoyProgramado() });
+    render(<TodayScreen />);
+
+    expect(await screen.findByRole('img', { name: /progreso de hoy: 0%/i })).toBeDefined();
+
+    await userEvent.click(await screen.findByRole('button', { name: /meditar/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: /progreso de hoy: 100%/i })).toBeDefined();
+    });
+  });
 });

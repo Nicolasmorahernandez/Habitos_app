@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Entry, Habit } from '../core/types';
-import { hoy as fechaDeHoy } from '../core/dates';
+import type { EntriesByHabitId, Habit } from '../core/types';
+import { hoy as fechaDeHoy, minutosDelDia } from '../core/dates';
 import { isScheduled } from '../core/schedule';
 import { isComplete } from '../core/completion';
 import { currentStreak } from '../core/streaks';
+import { progresoDelDia } from '../core/dailyProgress';
 import { useHabits } from './useHabits';
 import { entriesDeFecha, marcarHabito, mapaDeEntries } from '../store/entries';
 import { HabitRow } from './HabitRow';
+import { DailyProgressChart } from './DailyProgressChart';
 
 export function TodayScreen() {
   const { habitos, cargando, error, recargar } = useHabits();
-  const [entradas, setEntradas] = useState<Map<string, Entry>>(new Map());
+  const [entradas, setEntradas] = useState<EntriesByHabitId>(new Map());
   const [rachas, setRachas] = useState<Map<string, number>>(new Map());
   const fecha = fechaDeHoy();
 
@@ -94,6 +96,13 @@ export function TodayScreen() {
             />
           ))}
         </section>
+      )}
+
+      {deHoy.length > 0 && (
+        <DailyProgressChart
+          puntos={progresoDelDia(deHoy, entradas)}
+          ahoraMinutos={minutosDelDia(new Date().toISOString())}
+        />
       )}
 
       {todoHecho && <p className="vacio">Día completo.</p>}
