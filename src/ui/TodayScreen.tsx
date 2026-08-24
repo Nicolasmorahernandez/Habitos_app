@@ -24,14 +24,18 @@ export function TodayScreen() {
   }, [cargarDia]);
 
   useEffect(() => {
+    let cancelado = false;
     async function calcular() {
       const nuevas = new Map<string, number>();
       for (const h of habitos) {
         nuevas.set(h.id, currentStreak(h, await mapaDeEntries(h.id), fecha));
       }
-      setRachas(nuevas);
+      if (!cancelado) setRachas(nuevas);
     }
     void calcular();
+    return () => {
+      cancelado = true;
+    };
   }, [habitos, entradas, fecha]);
 
   async function alMarcar(habit: Habit, valor: boolean | number) {

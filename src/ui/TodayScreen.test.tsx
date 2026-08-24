@@ -35,8 +35,16 @@ describe('TodayScreen', () => {
     const otroDia = ((weekdayOf(hoy()) + 1) % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
     await crearHabito({ nombre: 'Gimnasio', tipo: 'booleano', objetivo: null, dias: [otroDia] });
     render(<TodayScreen />);
-    await screen.findByText(/no toca ningún hábito|no tienes hábitos/i);
+    await screen.findByText(/no toca ningún hábito/i);
     expect(screen.queryByText('Gimnasio')).toBeNull();
+  });
+
+  it('muestra "no toca ningún hábito" (y no "no tienes hábitos") cuando hay hábitos pero ninguno programado hoy', async () => {
+    const otroDia = ((weekdayOf(hoy()) + 1) % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
+    await crearHabito({ nombre: 'Gimnasio', tipo: 'booleano', objetivo: null, dias: [otroDia] });
+    render(<TodayScreen />);
+    expect(await screen.findByText(/no toca ningún hábito/i)).toBeDefined();
+    expect(screen.queryByText(/no tienes hábitos/i)).toBeNull();
   });
 
   it('separa los hábitos nuevos de los consolidados', async () => {
@@ -58,6 +66,44 @@ describe('TodayScreen', () => {
       const guardadas = await entriesDeHabito(h.id);
       expect(guardadas).toHaveLength(1);
       expect(guardadas[0].valor).toBe(true);
+      expect(guardadas[0].fecha).toBe(hoy());
+    });
+  });
+
+  it('muestra "Día completo." cuando todos los hábitos programados están completos', async () => {
+    await crearHabito({ nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: hoyProgramado() });
+    render(<TodayScreen />);
+    await userEvent.click(await screen.findByRole('button', { name: /meditar/i }));
+    expect(await screen.findByText(/día completo/i)).toBeDefined();
+  });
+
+  it('no muestra "Día completo." si algún hábito programado sigue pendiente', async () => {
+    const meditar = await crearHabito({ nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: hoyProgramado() });
+    await crearHabito({ nombre: 'Leer', tipo: 'booleano', objetivo: null, dias: hoyProgramado() });
+    render(<TodayScreen />);
+    await userEvent.click(await screen.findByRole('button', { name: /meditar/i }));
+
+    await waitFor(async () => {
+      const guardadas = await entriesDeHabito(meditar.id);
+      expect(guardadas).toHaveLength(1);
+    });
+    expect(screen.queryByText(/día completo/i)).toBeNull();
+  });
+
+  it('marca un hábito de tipo cantidad al pulsar sumar', async () => {
+    const h = await crearHabito({
+      nombre: 'Flexiones',
+      tipo: 'cantidad',
+      objetivo: 10,
+      dias: hoyProgramado(),
+    });
+    render(<TodayScreen />);
+    await userEvent.click(await screen.findByRole('button', { name: /sumar uno a flexiones/i }));
+
+    await waitFor(async () => {
+      const guardadas = await entriesDeHabito(h.id);
+      expect(guardadas).toHaveLength(1);
+      expect(guardadas[0].valor).toBe(1);
       expect(guardadas[0].fecha).toBe(hoy());
     });
   });
