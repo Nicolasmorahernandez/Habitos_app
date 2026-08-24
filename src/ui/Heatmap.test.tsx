@@ -43,4 +43,14 @@ describe('Heatmap', () => {
     expect(screen.getByRole('button', { name: 'Correr: 2026-08-24' })).toBeDefined();
     expect(screen.queryByRole('button', { name: 'Meditar: 2026-08-24' })).toBeNull();
   });
+
+  it('no revienta con un array de celdas vacío', () => {
+    render(<Heatmap celdas={[]} etiquetaHabito="Meditar" onSeleccionar={vi.fn()} />);
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
+  });
+
+  it('con etiquetaHabito vacía, la celda sigue siendo identificable por su fecha', () => {
+    render(<Heatmap celdas={celdas} etiquetaHabito="" onSeleccionar={vi.fn()} />);
+    expect(screen.getByRole('button', { name: ': 2026-08-24' })).toBeDefined();
+  });
 });
