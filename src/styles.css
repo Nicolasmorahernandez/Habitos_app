@@ -1,0 +1,69 @@
+:root {
+  --fondo: #0f1115;
+  --superficie: #181b22;
+  --superficie-alta: #222630;
+  --texto: #e8eaed;
+  --texto-tenue: #9aa0aa;
+  --acento: #5b8cff;
+  --exito: #3fbf7f;
+  --borde: #2a2f3a;
+  --radio: 12px;
+  --espacio: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--espacio);
+  padding-bottom: 84px;
+}
+
+h1 { font-size: 1.4rem; margin: 0 0 var(--espacio); }
+h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-tenue);
+  margin: 24px 0 8px;
+}
+
+.tabbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  background: var(--superficie);
+  border-top: 1px solid var(--borde);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tabbar button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--texto-tenue);
+  padding: 14px 0;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.tabbar button[aria-current='page'] { color: var(--acento); }
+
+.card {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: var(--espacio);
+  margin-bottom: 8px;
+}
+
+.vacio { color: var(--texto-tenue); font-size: 0.9rem; }
