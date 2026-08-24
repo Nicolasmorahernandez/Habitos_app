@@ -62,7 +62,7 @@ export function DailyProgressChart({ puntos, ahoraMinutos }: Props) {
           aria-hidden="true"
         />
 
-        <path d={segmentos.join(' ')} className="grafica-linea" />
+        <path d={segmentos.join(' ')} className="grafica-linea" aria-hidden="true" />
 
         {hayProyeccion && (
           <line
@@ -76,7 +76,14 @@ export function DailyProgressChart({ puntos, ahoraMinutos }: Props) {
         )}
 
         {puntos.map((p) => (
-          <circle key={p.minutos} cx={xDe(p.minutos)} cy={yDe(p.porcentaje)} r={4} className="grafica-punto" />
+          <circle
+            key={p.minutos}
+            cx={xDe(p.minutos)}
+            cy={yDe(p.porcentaje)}
+            r={4}
+            className="grafica-punto"
+            aria-hidden="true"
+          />
         ))}
 
         <text
