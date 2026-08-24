@@ -39,4 +39,17 @@ describe('completionRate', () => {
   it('es 0 cuando no se cumple ninguno', () => {
     expect(completionRate(lmv, new Map(), '2026-08-24', '2026-08-30')).toBe(0);
   });
+
+  it('no cuenta días anteriores a la creación del hábito', () => {
+    // Creado hace 3 días (2026-08-28), se pide el rango de los últimos 30 días
+    // (hasta 2026-08-31), que se extiende mucho antes de que el hábito existiera.
+    const creadoHaceTresDias: Habit = { ...lmv, creado_en: '2026-08-28T10:00:00.000Z' };
+    const e = hechos(['2026-08-28', '2026-08-31']); // días programados (viernes y lunes)
+    expect(completionRate(creadoHaceTresDias, e, '2026-08-02', '2026-08-31')).toBe(1);
+  });
+
+  it('no cambia el comportamiento cuando desde ya es posterior a la creación', () => {
+    const e = hechos(['2026-08-24', '2026-08-26']);
+    expect(completionRate(lmv, e, '2026-08-24', '2026-08-30')).toBeCloseTo(2 / 3);
+  });
 });

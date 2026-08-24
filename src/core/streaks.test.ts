@@ -70,6 +70,12 @@ describe('currentStreak', () => {
     const e = hechos(['2026-12-31', '2027-01-01']);
     expect(currentStreak(diario, e, '2027-01-01')).toBe(2);
   });
+
+  it('es 0 para un hábito sin días programados, aunque haya anotaciones', () => {
+    const sinDias: Habit = { ...diario, dias: [] };
+    const e = hechos(['2026-08-21', '2026-08-22', '2026-08-23']);
+    expect(currentStreak(sinDias, e, '2026-08-23')).toBe(0);
+  });
 });
 
 describe('longestStreak', () => {

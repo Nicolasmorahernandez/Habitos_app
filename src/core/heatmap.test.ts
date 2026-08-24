@@ -38,4 +38,19 @@ describe('buildHeatmap', () => {
     expect(celdas[0].weekday).toBe(1);
     expect(celdas[6].weekday).toBe(0);
   });
+
+  it('marca como completo un día de cantidad solo si alcanza el objetivo', () => {
+    const vasos: Habit = {
+      id: 'h3', nombre: 'Agua', tipo: 'cantidad', objetivo: 8,
+      dias: [0, 1, 2, 3, 4, 5, 6], estado: 'nuevo', orden: 0,
+      creado_en: '2026-08-01T10:00:00.000Z', actualizado_en: '2026-08-01T10:00:00.000Z',
+    };
+    const entradasCantidad: EntriesByDate = new Map<string, Entry>([
+      ['2026-08-24', { habit_id: 'h3', fecha: '2026-08-24', valor: 8, actualizado_en: 'x' }],
+      ['2026-08-25', { habit_id: 'h3', fecha: '2026-08-25', valor: 5, actualizado_en: 'x' }],
+    ]);
+    const celdas = buildHeatmap(vasos, entradasCantidad, '2026-08-24', '2026-08-25');
+    expect(celdas[0].completo).toBe(true);
+    expect(celdas[1].completo).toBe(false);
+  });
 });
