@@ -493,6 +493,15 @@ git commit -m "feat(ui): add daily progress step-line chart component"
 
 ## Task 4: Conectar la gráfica en `TodayScreen`
 
+**Nota (de la revisión de calidad de la Task 2):** `core/types.ts` ahora
+exporta `EntriesByHabitId = Map<string, Entry>`, un alias para el mapa de
+anotaciones de hoy indexado por `habit_id` —distinto de `EntriesByDate`
+(indexado por fecha), que tiene la misma forma pero significa otra cosa.
+Al tocar `TodayScreen.tsx` en esta tarea, cambia el tipo de su estado
+`entradas` de `Map<string, Entry>` a `EntriesByHabitId` (importándolo de
+`../core/types`), para que quede usando el alias correcto en el sitio
+donde más importa evitar la confusión.
+
 **Files:**
 - Modify: `src/ui/TodayScreen.tsx`
 - Modify: `src/ui/TodayScreen.test.tsx`
