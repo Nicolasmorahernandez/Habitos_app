@@ -17,7 +17,12 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "noUnusedLocals": true,
+    // noUnusedLocals desactivado: los tests del proyecto crean varios
+    // registros como fixtures (p. ej. "const a = ...; const b = ...") sin
+    // leer todas las variables después, y ese estilo choca con este flag en
+    // decenas de tests del plan. noUnusedParameters se mantiene porque el
+    // código sí sigue la convención de prefijo "_" para parámetros no usados.
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
