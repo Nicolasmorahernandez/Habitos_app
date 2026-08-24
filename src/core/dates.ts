@@ -16,8 +16,10 @@ export function fromIsoDate(iso: IsoDate): Date {
   }
   const [y, m, d] = iso.split('-').map(Number);
   const fecha = new Date(y, m - 1, d);
-  if (Number.isNaN(fecha.getTime())) {
-    throw new Error(`Fecha inválida: "${iso}" no corresponde a ningún día`);
+  // Date desborda en silencio: el 30 de febrero se convierte en el 2 de marzo.
+  // Si el ida y vuelta no coincide, el día pedido no existe en el calendario.
+  if (toIsoDate(fecha) !== iso) {
+    throw new Error(`Fecha inválida: "${iso}" no existe en el calendario`);
   }
   return fecha;
 }

@@ -59,6 +59,25 @@ describe('fromIsoDate', () => {
   it('rechaza una cadena sin sentido', () => {
     expect(() => fromIsoDate('mañana')).toThrow();
   });
+
+  it('rechaza un día que no existe en su mes', () => {
+    expect(() => fromIsoDate('2026-02-30')).toThrow(/2026-02-30/);
+  });
+
+  it('rechaza mes y día fuera de rango en vez de desbordar', () => {
+    expect(() => fromIsoDate('2026-13-45')).toThrow(/2026-13-45/);
+  });
+
+  it('rechaza el 29 de febrero de un año no bisiesto', () => {
+    expect(() => fromIsoDate('2027-02-29')).toThrow(/2027-02-29/);
+  });
+
+  it('acepta el 29 de febrero de un año bisiesto', () => {
+    const d = fromIsoDate('2028-02-29');
+    expect(d.getMonth()).toBe(1);
+    expect(d.getDate()).toBe(29);
+    expect(toIsoDate(d)).toBe('2028-02-29');
+  });
 });
 
 describe('isoDateOf', () => {
