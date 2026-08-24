@@ -2766,6 +2766,17 @@ git commit -m "feat(ui): add settings screen with habit management and backup"
 
 ## Task 19: Componente Heatmap
 
+**Nota de rendimiento (heredada de `TodayScreen`, Task 16):** el efecto de rachas
+de `TodayScreen` recalcula la racha de *todos* los hábitos en cada marca, no solo
+la del que cambió, porque `mapaDeEntries` no distingue qué hábito se tocó. Si
+`HistoryScreen`/`HabitDetail` (Task 20-21) reutilizan un patrón similar iterando
+hábitos × historial para pintar el heatmap, ese mismo coste se repite. A la
+escala de esta app (un puñado de hábitos, unos pocos años de historial) sigue
+siendo intrascendente — no vale la pena rediseñar `entries.ts` por esto. Si en el futuro
+hace falta, la solución de fondo es que el estado derivado (entrada + racha) se
+guarde en una única estructura por hábito en vez de mapas paralelos, no acelerar
+consultas individuales.
+
 **Files:**
 - Create: `src/ui/Heatmap.tsx`
 - Test: `src/ui/Heatmap.test.tsx`
