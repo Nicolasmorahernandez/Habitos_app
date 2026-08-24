@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Recuperado tras el scaffold de Vite
+.env
+.env.local
+.wrangler/
+.DS_Store
