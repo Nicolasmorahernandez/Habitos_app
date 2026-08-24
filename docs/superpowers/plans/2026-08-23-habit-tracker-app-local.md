@@ -3495,7 +3495,11 @@ Con `npm run dev` abierto:
 4. Hoy → pulsa `+` en "Agua" ocho veces: el contador llega a 8/8 y la tarjeta se marca como completa.
 5. Recarga la página con F5: las marcas siguen ahí.
 6. Ajustes → "Consolidar Meditar". Vuelve a Hoy: "Meditar" aparece ahora bajo "Consolidados".
-7. Historial → elige "Meditar". El día de hoy aparece verde en el heatmap.
+7. **[Desactualizado tras `docs/superpowers/plans/2026-08-23-history-all-habits.md`]**
+   Historial → elige "Meditar". El día de hoy aparece verde en el heatmap.
+   Este paso asume el selector de un solo hábito, que ese plan posterior
+   reemplaza por una lista con todos los hábitos a la vez. Ver el recorrido
+   actualizado en la Task 4 de ese plan.
 8. Historial → pulsa una celda de un día pasado → "Marcar como hecho". La celda se vuelve verde. **Si el hábito se creó hoy mismo** (como en este recorrido recién instalado), la racha del panel inferior *no* aumenta al marcar "ayer": por diseño (Unidad C), no cuentan días anteriores a la creación del hábito, y "ayer" es anterior a "hoy". Eso es correcto, no un fallo. Para ver la racha crecer de verdad, repite este paso con un hábito que ya tuviera unos días de antigüedad.
 9. Ajustes → "Exportar JSON": se descarga el fichero. Ábrelo y comprueba que contiene los dos hábitos.
 10. Ajustes → "Importar JSON" con ese mismo fichero: aparece "Copia restaurada" y los hábitos siguen intactos.
