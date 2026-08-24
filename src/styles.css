@@ -210,3 +210,7 @@ h2 {
 .celda.pendiente { background: #3a3f4b; }
 .celda.libre { background: #21242c; cursor: pointer; }
 .celda.hueco { background: transparent; cursor: default; }
+
+.estadisticas { display: flex; justify-content: space-around; text-align: center; }
+.estadisticas .dato { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.estadisticas .etiqueta { font-size: 0.75rem; color: var(--texto-tenue); }
