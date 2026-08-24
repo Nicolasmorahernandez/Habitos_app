@@ -1282,6 +1282,14 @@ git add src/store/habits.ts src/store/habits.test.ts
 git commit -m "feat(store): add habit CRUD"
 ```
 
+**Deuda pendiente detectada más tarde (docs/superpowers/plans/2026-08-23-history-all-habits.md):**
+`actualizarHabito` no pasa por `validar()` — solo `crearHabito` lo hace. Hoy
+nada de la app llama a `actualizarHabito` cambiando `nombre`, así que no es
+alcanzable, pero el día que exista una función de renombrar un hábito,
+`actualizarHabito(id, { nombre: '' })` colaría un nombre vacío sin aviso. Si
+se construye esa función, añadir la misma validación de nombre no vacío que
+ya tiene `crearHabito`.
+
 ---
 
 ## Task 11: Anotaciones diarias
