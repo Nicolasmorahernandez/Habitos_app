@@ -113,3 +113,42 @@ h2 {
   padding: var(--espacio) 0;
   cursor: pointer;
 }
+
+.formulario { display: flex; flex-direction: column; gap: 6px; }
+.formulario label { font-size: 0.8rem; color: var(--texto-tenue); }
+.formulario input[type='text'],
+.formulario input,
+.formulario select {
+  background: var(--superficie-alta);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  color: var(--texto);
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.dias {
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 8px 0;
+}
+.dias legend { font-size: 0.8rem; color: var(--texto-tenue); }
+.dias label { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--texto); }
+
+.aviso { color: #ff9a9a; font-size: 0.85rem; margin: 4px 0; }
+
+.acciones { display: flex; gap: 8px; margin-top: 8px; }
+.acciones button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: var(--superficie-alta);
+  color: var(--texto);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.acciones button[type='submit'] { background: var(--acento); border-color: var(--acento); color: #fff; }
