@@ -352,7 +352,7 @@ Nota sobre `datesBetween`: la comparación `cursor <= hasta` funciona porque el 
 - [ ] **Step 4: Ejecutar los tests para verificar que pasan**
 
 Run: `npx vitest run src/core/dates.test.ts`
-Esperado: PASS, 13 tests.
+Esperado: PASS, 15 tests.
 
 - [ ] **Step 5: Commit**
 
