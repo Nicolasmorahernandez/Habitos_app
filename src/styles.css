@@ -67,3 +67,40 @@ h2 {
 }
 
 .vacio { color: var(--texto-tenue); font-size: 0.9rem; }
+
+.fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio);
+  width: 100%;
+  text-align: left;
+}
+
+.fila-boton {
+  color: var(--texto);
+  font: inherit;
+  cursor: pointer;
+}
+
+.fila.completa { border-color: var(--exito); }
+.fila-texto { display: flex; align-items: center; gap: 8px; }
+.fila-nombre { font-size: 1rem; }
+.racha { color: var(--texto-tenue); font-size: 0.85rem; }
+.check { color: var(--exito); font-size: 1.2rem; width: 1.2rem; }
+
+.contador { display: flex; align-items: center; gap: 10px; }
+.contador button {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--borde);
+  background: var(--superficie-alta);
+  color: var(--texto);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.progreso { min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* Los hábitos consolidados se presentan más discretos que los nuevos. */
+.compacta .fila { padding: 8px var(--espacio); }
+.compacta .fila-nombre { font-size: 0.92rem; color: var(--texto-tenue); }
