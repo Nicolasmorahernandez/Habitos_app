@@ -10,10 +10,10 @@ export function SettingsScreen() {
   const [mensaje, setMensaje] = useState<string | null>(null);
 
   async function guardar(nuevo: NuevoHabito) {
+    setMensaje(null);
     try {
       await crearHabito(nuevo);
       setCreando(false);
-      setMensaje(null);
       await recargar();
     } catch (e) {
       setMensaje(e instanceof Error ? e.message : 'No se pudo guardar el hábito');
@@ -21,13 +21,17 @@ export function SettingsScreen() {
   }
 
   async function exportar() {
-    const json = await exportarJSON();
-    const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `habitos-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const json = await exportarJSON();
+      const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `habitos-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setMensaje(e instanceof Error ? e.message : 'No se pudo exportar la copia');
+    }
   }
 
   async function importar(archivo: File) {
@@ -91,12 +95,13 @@ export function SettingsScreen() {
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (f) void importar(f);
+              e.target.value = '';
             }}
           />
         </label>
       </div>
 
-      {mensaje && <p className="aviso">{mensaje}</p>}
+      {mensaje && <p className="aviso" role="alert">{mensaje}</p>}
     </>
   );
 }

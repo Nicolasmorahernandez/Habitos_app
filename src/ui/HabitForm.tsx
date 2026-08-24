@@ -94,7 +94,7 @@ export function HabitForm({ inicial, onGuardar, onCancelar }: Props) {
         ))}
       </fieldset>
 
-      {aviso && <p className="aviso">{aviso}</p>}
+      {aviso && <p className="aviso" role="alert">{aviso}</p>}
 
       <div className="acciones">
         <button type="submit">Guardar</button>
