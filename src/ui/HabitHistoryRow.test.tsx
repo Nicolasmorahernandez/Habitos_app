@@ -70,6 +70,19 @@ describe('HabitHistoryRow', () => {
     expect(screen.queryByTestId('racha-actual')).toBeNull();
   });
 
+  it('al pasar de expandida a colapsada, las estadísticas realmente desaparecen', async () => {
+    const h = await crearHabito({
+      nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: [0, 1, 2, 3, 4, 5, 6],
+    });
+    const { rerender } = render(
+      <HabitHistoryRow habit={h} expandido={true} onToggleExpandir={() => {}} />,
+    );
+    await screen.findByTestId('racha-actual');
+
+    rerender(<HabitHistoryRow habit={h} expandido={false} onToggleExpandir={() => {}} />);
+    expect(screen.queryByTestId('racha-actual')).toBeNull();
+  });
+
   it('tocar una celda del heatmap compacto abre la tarjeta y persiste sin necesidad de expandir', async () => {
     const h = await crearHabito({
       nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: [0, 1, 2, 3, 4, 5, 6],
