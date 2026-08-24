@@ -11,8 +11,8 @@ export default defineConfig({
         name: 'Hábitos',
         short_name: 'Hábitos',
         description: 'Seguimiento personal de hábitos',
-        theme_color: '#0f1115',
-        background_color: '#0f1115',
+        theme_color: '#eef0e6',
+        background_color: '#eef0e6',
         display: 'standalone',
         start_url: '/',
         icons: [
