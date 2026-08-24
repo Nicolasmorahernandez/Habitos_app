@@ -83,7 +83,7 @@ npm install -D vitest @vitest/coverage-v8 fake-indexeddb @testing-library/react 
 Reemplaza el contenido completo del fichero:
 
 ```ts
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
@@ -96,11 +96,10 @@ export default defineConfig({
 });
 ```
 
-TypeScript se quejará de la clave `test` hasta que añadas la referencia de tipos. Añade como primera línea del fichero:
-
-```ts
-/// <reference types="vitest" />
-```
+Importante: `defineConfig` viene de `vitest/config`, no de `vite`. Vitest 4 eliminó la
+ampliación del tipo de configuración de Vite, así que la variante con
+`/// <reference types="vitest" />` e import desde `'vite'` falla con
+`TS2769: 'test' does not exist in type 'UserConfigExport'`.
 
 - [ ] **Step 4: Crear `src/test-setup.ts`**
 
@@ -187,10 +186,13 @@ export type EntriesByDate = Map<IsoDate, Entry>;
 - [ ] **Step 2: Verificar que compila**
 
 ```bash
-npx tsc --noEmit
+npx tsc -b --force
 ```
 
-Esperado: sin errores.
+Esperado: sin errores. Nota: el `tsconfig.json` que genera Vite es un fichero de
+solución (`"files": []` con `references`), de modo que `npx tsc --noEmit` no compila
+nada y siempre pasa. Usa `tsc -b --force`, que sí recorre `src/`. Lo mismo aplica a
+todas las comprobaciones de tipos del resto del plan.
 
 - [ ] **Step 3: Commit**
 
@@ -1032,7 +1034,7 @@ export async function isStorageAvailable(): Promise<boolean> {
 - [ ] **Step 2: Verificar que compila**
 
 ```bash
-npx tsc --noEmit
+npx tsc -b --force
 ```
 
 Esperado: sin errores.
@@ -1790,7 +1792,7 @@ export function useHabits() {
 - [ ] **Step 2: Verificar que compila**
 
 ```bash
-npx tsc --noEmit
+npx tsc -b --force
 ```
 
 Esperado: sin errores.
@@ -3284,8 +3286,7 @@ git commit -m "feat(ui): warn when browser storage is unavailable"
 Reemplaza el contenido completo:
 
 ```ts
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -3374,7 +3375,7 @@ Esperado: todos los ficheros de test en verde, sin ninguno omitido.
 - [ ] **Step 2: Comprobar los tipos**
 
 ```bash
-npx tsc --noEmit
+npx tsc -b --force
 ```
 
 Esperado: sin errores.
