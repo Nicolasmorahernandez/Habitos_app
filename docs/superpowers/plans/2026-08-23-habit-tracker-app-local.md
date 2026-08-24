@@ -1588,6 +1588,18 @@ git add src/store/backup.ts src/store/backup.test.ts
 git commit -m "feat(store): add JSON export and import"
 ```
 
+**Tras revisión de spec:** `parsear` de arriba comprueba que `habits`/`entries` sean
+arrays, pero no valida la forma de cada elemento. Un objeto de hábito mal formado
+(p. ej. sin `id`, la clave del object store) pasa esa comprobación y revienta a
+mitad de la transacción con un `DataError` de IndexedDB — para entonces el store
+ya se vació y parte de los datos nuevos ya se escribieron, rompiendo justo la
+garantía de "todo o nada" que este task promete. Añadir a `parsear` guardas de
+tipo por elemento (`esHabitoValido`, `esEntryValido`) que verifiquen los campos
+obligatorios de `Habit`/`Entry`, y validar con `.every(...)` antes de abrir la
+transacción, lanzando con el mismo mensaje `/formato/i`. Añadir un test que
+reproduzca el caso exacto (un hábito válido y uno sin `id` en el mismo import)
+y confirme que la base queda intacta tras el rechazo.
+
 ---
 
 ## Task 13: Estilos base y shell de la aplicación
