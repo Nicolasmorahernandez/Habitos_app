@@ -3496,7 +3496,7 @@ Con `npm run dev` abierto:
 5. Recarga la página con F5: las marcas siguen ahí.
 6. Ajustes → "Consolidar Meditar". Vuelve a Hoy: "Meditar" aparece ahora bajo "Consolidados".
 7. Historial → elige "Meditar". El día de hoy aparece verde en el heatmap.
-8. Historial → pulsa una celda de un día pasado → "Marcar como hecho". La celda se vuelve verde y la racha del panel inferior aumenta.
+8. Historial → pulsa una celda de un día pasado → "Marcar como hecho". La celda se vuelve verde. **Si el hábito se creó hoy mismo** (como en este recorrido recién instalado), la racha del panel inferior *no* aumenta al marcar "ayer": por diseño (Unidad C), no cuentan días anteriores a la creación del hábito, y "ayer" es anterior a "hoy". Eso es correcto, no un fallo. Para ver la racha crecer de verdad, repite este paso con un hábito que ya tuviera unos días de antigüedad.
 9. Ajustes → "Exportar JSON": se descarga el fichero. Ábrelo y comprueba que contiene los dos hábitos.
 10. Ajustes → "Importar JSON" con ese mismo fichero: aparece "Copia restaurada" y los hábitos siguen intactos.
 
