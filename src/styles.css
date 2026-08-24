@@ -223,3 +223,19 @@ h2 {
   font-size: 0.85rem;
   margin-bottom: var(--espacio);
 }
+
+.fila-historial { display: flex; flex-direction: column; gap: 6px; }
+
+.enlace-habito {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--texto);
+  font: inherit;
+  font-size: 1rem;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
