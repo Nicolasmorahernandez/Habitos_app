@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { EntriesByDate, IsoDate } from '../core/types';
+import type { EntriesByDate, Habit, IsoDate } from '../core/types';
 import { addDays, hoy as fechaDeHoy } from '../core/dates';
 import { buildHeatmap, type HeatmapCell } from '../core/heatmap';
 import { isComplete } from '../core/completion';
@@ -11,6 +11,16 @@ import { mapaDeEntries, marcarHabito } from '../store/entries';
 
 /** Ventana del heatmap: las últimas 26 semanas. */
 const DIAS_VISIBLES = 182;
+
+/** Único lugar donde se calculan las entradas y las celdas del heatmap de un hábito. */
+async function calcularEntradasYCeldas(
+  h: Habit,
+): Promise<{ mapa: EntriesByDate; celdas: HeatmapCell[] }> {
+  const mapa = await mapaDeEntries(h.id);
+  const hasta = fechaDeHoy();
+  const desde = addDays(hasta, -(DIAS_VISIBLES - 1));
+  return { mapa, celdas: buildHeatmap(h, mapa, desde, hasta) };
+}
 
 export function HistoryScreen() {
   const { habitos, cargando } = useHabits();
@@ -27,28 +37,23 @@ export function HistoryScreen() {
 
   const recargarEntradas = useCallback(async () => {
     if (!habit) return;
-    const mapa = await mapaDeEntries(habit.id);
-    const hasta = fechaDeHoy();
-    const desde = addDays(hasta, -(DIAS_VISIBLES - 1));
+    const { mapa, celdas: nuevasCeldas } = await calcularEntradasYCeldas(habit);
     setEntradas(mapa);
-    setCeldas(buildHeatmap(habit, mapa, desde, hasta));
+    setCeldas(nuevasCeldas);
   }, [habit]);
 
   // Efecto separado de recargarEntradas: al cambiar de hábito rápidamente, una
   // resolución de mapaDeEntries más lenta para el hábito anterior podría llegar
   // después de la del hábito nuevo y pisar entradas/celdas con datos obsoletos.
   useEffect(() => {
+    if (!habit) return;
     let cancelado = false;
-    async function cargar() {
-      if (!habit) return;
-      const mapa = await mapaDeEntries(habit.id);
+    void (async () => {
+      const { mapa, celdas: nuevasCeldas } = await calcularEntradasYCeldas(habit);
       if (cancelado) return;
-      const hasta = fechaDeHoy();
-      const desde = addDays(hasta, -(DIAS_VISIBLES - 1));
       setEntradas(mapa);
-      setCeldas(buildHeatmap(habit, mapa, desde, hasta));
-    }
-    void cargar();
+      setCeldas(nuevasCeldas);
+    })();
     return () => {
       cancelado = true;
     };
@@ -66,9 +71,13 @@ export function HistoryScreen() {
 
   async function guardarDia(valor: boolean | number) {
     if (!habit || !diaAbierto) return;
-    await marcarHabito(habit.id, diaAbierto, valor);
+    const dia = diaAbierto;
+    await marcarHabito(habit.id, dia, valor);
     await recargarEntradas();
-    setDiaAbierto(null);
+    // Solo cierra la tarjeta si sigue mostrando el día que se acaba de guardar:
+    // si el usuario ya abrió otro día mientras este guardado estaba en curso,
+    // no debe arrebatarle esa tarjeta.
+    setDiaAbierto((actual) => (actual === dia ? null : actual));
   }
 
   const entradaDelDia = diaAbierto ? entradas.get(diaAbierto) : undefined;
@@ -109,6 +118,7 @@ export function HistoryScreen() {
           ) : (
             <div className="acciones">
               <input
+                key={diaAbierto}
                 type="number"
                 min="0"
                 aria-label="Cantidad"
