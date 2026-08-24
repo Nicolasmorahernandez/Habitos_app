@@ -7,6 +7,7 @@ import {
   addDays,
   datesBetween,
   hoy,
+  minutosDelDia,
 } from './dates';
 
 // Las pruebas corren con TZ=Europe/Madrid (ver vite.config.ts): en agosto, UTC+2.
@@ -162,5 +163,29 @@ describe('datesBetween', () => {
 describe('hoy', () => {
   it('usa el reloj recibido', () => {
     expect(hoy(new Date(2026, 7, 23, 0, 30))).toBe('2026-08-23');
+  });
+});
+
+describe('minutosDelDia', () => {
+  it('es 0 justo a medianoche', () => {
+    // Con TZ=Europe/Madrid (UTC+2 en agosto), la medianoche local del 23 es
+    // las 22:00 UTC del 22 — no confundir con '2026-08-23T00:00:00.000Z',
+    // que en local ya son las 02:00 (120 minutos), no medianoche.
+    expect(minutosDelDia('2026-08-22T22:00:00.000Z')).toBe(0);
+  });
+
+  it('cuenta las horas y minutos del timestamp en hora local', () => {
+    // Con TZ=Europe/Madrid (fijada en vite.config.ts), 10:00 UTC en agosto
+    // (UTC+2) son las 12:00 locales → 12*60 = 720 minutos.
+    expect(minutosDelDia('2026-08-23T10:00:00.000Z')).toBe(720);
+  });
+
+  it('el último minuto del día es 1439', () => {
+    // 21:59 UTC en agosto (UTC+2) son las 23:59 locales.
+    expect(minutosDelDia('2026-08-23T21:59:00.000Z')).toBe(1439);
+  });
+
+  it('lanza error con un timestamp que no se puede interpretar', () => {
+    expect(() => minutosDelDia('no-es-una-fecha')).toThrow(/inválido/i);
   });
 });

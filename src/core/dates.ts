@@ -60,3 +60,12 @@ export function datesBetween(desde: IsoDate, hasta: IsoDate): IsoDate[] {
 export function hoy(ahora: Date = new Date()): IsoDate {
   return toIsoDate(ahora);
 }
+
+/** Minutos desde medianoche local de un timestamp ISO completo. */
+export function minutosDelDia(timestamp: string): number {
+  const d = new Date(timestamp);
+  if (Number.isNaN(d.getTime())) {
+    throw new Error(`Timestamp inválido: "${timestamp}"`);
+  }
+  return d.getHours() * 60 + d.getMinutes();
+}
