@@ -17,7 +17,7 @@ src/
   core/
     types.ts        Tipos del dominio. Sin lógica.
     dates.ts        Aritmética de fechas sobre strings YYYY-MM-DD en hora local.
-    schedule.ts     Qué días toca un hábito.
+    schedule.ts     Qué días toca un hábito, hacia delante y hacia atrás.
     completion.ts   Si una anotación cuenta como completada.
     streaks.ts      Racha actual y racha máxima.
     stats.ts        Porcentaje de cumplimiento.
@@ -688,33 +688,38 @@ Esperado: FAIL — `Failed to resolve import "./streaks"`.
 
 ```ts
 import type { EntriesByDate, Habit, IsoDate } from './types';
-import { toIsoDate } from './dates';
-import { scheduledDates } from './schedule';
+import { isoDateOf } from './dates';
+import { isScheduled, previousScheduled, scheduledDates } from './schedule';
 import { isComplete } from './completion';
 
 /** Primer día que cuenta para el hábito: el de su creación. */
-function inicioDe(habit: Habit): IsoDate {
-  return toIsoDate(new Date(habit.creado_en));
+export function primerDia(habit: Habit): IsoDate {
+  return isoDateOf(habit.creado_en);
 }
 
 /**
  * Días consecutivos cumplidos contando hacia atrás desde `hoy`, sobre los días
  * programados del hábito. Si hoy está programado pero aún sin cumplir, no
  * rompe la racha: se empieza a contar desde el día programado anterior.
+ *
+ * Camina hacia atrás con `previousScheduled` y para en el primer incumplimiento,
+ * de modo que el coste depende de la longitud de la racha y no del historial
+ * completo del hábito.
  */
 export function currentStreak(habit: Habit, entries: EntriesByDate, hoy: IsoDate): number {
-  const dias = scheduledDates(habit, inicioDe(habit), hoy);
-  let i = dias.length - 1;
+  const inicio = primerDia(habit);
 
-  // Hoy sin marcar es una excepción tolerada, una sola vez y solo si es hoy.
-  if (i >= 0 && dias[i] === hoy && !isComplete(habit, entries.get(dias[i]))) {
-    i--;
-  }
+  // Se empieza a contar en hoy solo si hoy está programado y ya está cumplido.
+  // En cualquier otro caso (hoy no toca, o toca pero aún está sin marcar) se
+  // arranca desde el día programado anterior: hoy sin marcar no rompe la racha.
+  const hoyCuenta = isScheduled(habit, hoy) && isComplete(habit, entries.get(hoy));
+  let cursor: IsoDate | null = hoyCuenta ? hoy : previousScheduled(habit, hoy);
 
   let racha = 0;
-  for (; i >= 0; i--) {
-    if (!isComplete(habit, entries.get(dias[i]))) break;
+  while (cursor !== null && cursor >= inicio) {
+    if (!isComplete(habit, entries.get(cursor))) break;
     racha++;
+    cursor = previousScheduled(habit, cursor);
   }
   return racha;
 }
@@ -3103,8 +3108,8 @@ Esperado: FAIL — el stub devuelve `null` y no existen los `data-testid`.
 
 ```tsx
 import type { EntriesByDate, Habit } from '../core/types';
-import { addDays, hoy as fechaDeHoy, toIsoDate } from '../core/dates';
-import { currentStreak, longestStreak } from '../core/streaks';
+import { addDays, hoy as fechaDeHoy } from '../core/dates';
+import { currentStreak, longestStreak, primerDia } from '../core/streaks';
 import { completionRate } from '../core/stats';
 
 interface Props {
@@ -3114,7 +3119,7 @@ interface Props {
 
 export function HabitDetail({ habit, entries }: Props) {
   const hasta = fechaDeHoy();
-  const desdeCreacion = toIsoDate(new Date(habit.creado_en));
+  const desdeCreacion = primerDia(habit);
   const ultimos30 = addDays(hasta, -29);
 
   const actual = currentStreak(habit, entries, hasta);
