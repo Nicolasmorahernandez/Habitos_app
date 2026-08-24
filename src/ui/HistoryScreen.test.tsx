@@ -22,7 +22,7 @@ describe('HistoryScreen', () => {
   it('muestra el heatmap del primer hábito', async () => {
     await crearHabito({ nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: [0, 1, 2, 3, 4, 5, 6] });
     render(<HistoryScreen />);
-    expect(await screen.findByRole('button', { name: hoy() })).toBeDefined();
+    expect(await screen.findByRole('button', { name: new RegExp(hoy()) })).toBeDefined();
   });
 
   it('permite marcar un día pasado desde el heatmap', async () => {
@@ -32,7 +32,7 @@ describe('HistoryScreen', () => {
     const ayer = addDays(hoy(), -1);
 
     render(<HistoryScreen />);
-    await userEvent.click(await screen.findByRole('button', { name: ayer }));
+    await userEvent.click(await screen.findByRole('button', { name: new RegExp(ayer) }));
     await userEvent.click(await screen.findByRole('button', { name: /marcar como hecho/i }));
 
     await waitFor(async () => {
@@ -61,12 +61,12 @@ describe('HistoryScreen', () => {
     render(<HistoryScreen />);
 
     // Abre el día A y escribe un valor sin confirmarlo con blur.
-    await userEvent.click(await screen.findByRole('button', { name: diaA }));
+    await userEvent.click(await screen.findByRole('button', { name: new RegExp(diaA) }));
     const campoDiaA = await screen.findByLabelText('Cantidad');
     fireEvent.change(campoDiaA, { target: { value: '7' } });
 
     // Cambia al día B sin haber perdido el foco del campo anterior.
-    await userEvent.click(await screen.findByRole('button', { name: diaB }));
+    await userEvent.click(await screen.findByRole('button', { name: new RegExp(diaB) }));
 
     // El usuario hace clic en otro lugar: dispara el blur del campo que ve ahora.
     fireEvent.blur(screen.getByLabelText('Cantidad'));

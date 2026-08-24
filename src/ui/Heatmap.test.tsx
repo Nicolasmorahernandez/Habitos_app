@@ -12,26 +12,35 @@ const celdas: HeatmapCell[] = [
 
 describe('Heatmap', () => {
   it('pinta una celda por día', () => {
-    render(<Heatmap celdas={celdas} onSeleccionar={vi.fn()} />);
+    render(<Heatmap celdas={celdas} etiquetaHabito="Meditar" onSeleccionar={vi.fn()} />);
     expect(screen.getAllByRole('button')).toHaveLength(3);
   });
 
-  it('etiqueta cada celda con su fecha', () => {
-    render(<Heatmap celdas={celdas} onSeleccionar={vi.fn()} />);
-    expect(screen.getByRole('button', { name: '2026-08-24' })).toBeDefined();
+  it('etiqueta cada celda con el hábito y su fecha', () => {
+    render(<Heatmap celdas={celdas} etiquetaHabito="Meditar" onSeleccionar={vi.fn()} />);
+    expect(screen.getByRole('button', { name: 'Meditar: 2026-08-24' })).toBeDefined();
   });
 
   it('distingue completo, pendiente y no programado', () => {
-    render(<Heatmap celdas={celdas} onSeleccionar={vi.fn()} />);
-    expect(screen.getByRole('button', { name: '2026-08-24' }).className).toContain('completo');
-    expect(screen.getByRole('button', { name: '2026-08-26' }).className).toContain('pendiente');
-    expect(screen.getByRole('button', { name: '2026-08-25' }).className).toContain('libre');
+    render(<Heatmap celdas={celdas} etiquetaHabito="Meditar" onSeleccionar={vi.fn()} />);
+    expect(screen.getByRole('button', { name: 'Meditar: 2026-08-24' }).className).toContain('completo');
+    expect(screen.getByRole('button', { name: 'Meditar: 2026-08-26' }).className).toContain('pendiente');
+    expect(screen.getByRole('button', { name: 'Meditar: 2026-08-25' }).className).toContain('libre');
   });
 
   it('devuelve la fecha al pulsar una celda', async () => {
     const onSeleccionar = vi.fn();
-    render(<Heatmap celdas={celdas} onSeleccionar={onSeleccionar} />);
-    await userEvent.click(screen.getByRole('button', { name: '2026-08-26' }));
+    render(<Heatmap celdas={celdas} etiquetaHabito="Meditar" onSeleccionar={onSeleccionar} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Meditar: 2026-08-26' }));
     expect(onSeleccionar).toHaveBeenCalledWith('2026-08-26');
+  });
+
+  it('dos hábitos con la misma fecha producen etiquetas distintas', () => {
+    const { rerender } = render(<Heatmap celdas={celdas} etiquetaHabito="Meditar" onSeleccionar={vi.fn()} />);
+    expect(screen.getByRole('button', { name: 'Meditar: 2026-08-24' })).toBeDefined();
+
+    rerender(<Heatmap celdas={celdas} etiquetaHabito="Correr" onSeleccionar={vi.fn()} />);
+    expect(screen.getByRole('button', { name: 'Correr: 2026-08-24' })).toBeDefined();
+    expect(screen.queryByRole('button', { name: 'Meditar: 2026-08-24' })).toBeNull();
   });
 });

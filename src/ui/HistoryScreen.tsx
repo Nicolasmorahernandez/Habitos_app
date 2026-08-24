@@ -101,7 +101,7 @@ export function HistoryScreen() {
         ))}
       </select>
 
-      <Heatmap celdas={celdas} onSeleccionar={setDiaAbierto} />
+      <Heatmap celdas={celdas} etiquetaHabito={habit.nombre} onSeleccionar={setDiaAbierto} />
 
       {diaAbierto && habit && (
         <div className="card">
