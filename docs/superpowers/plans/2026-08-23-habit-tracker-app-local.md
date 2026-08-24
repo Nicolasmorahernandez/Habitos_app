@@ -2060,6 +2060,17 @@ git commit -m "feat(ui): add habit row for boolean and quantity habits"
 
 ## Task 16: Pantalla Hoy
 
+**Nota de rendimiento:** `mapaDeEntries(habit_id)` trae *todo* el historial del
+hábito para construir el mapa, aunque `currentStreak` (Unidad C) solo necesita
+caminar unos pocos días hacia atrás. Esto no deshace la optimización de la
+Unidad C —sigue parando en el primer día incumplido—, pero sí significa que el
+coste de traer los datos de IndexedDB crece con la antigüedad del hábito, no
+con la longitud de la racha. A la escala de un tracker personal (unos pocos
+años de historial, un puñado de hábitos) esto es intrascendente: no vale la
+pena añadir una consulta acotada en `entries.ts` solo para este caso. Si en el
+futuro esto se nota lento, la solución es una función tipo `entriesRecientes(habit_id, dias)`
+en `store/entries.ts`, no tocar `core/streaks.ts`.
+
 **Files:**
 - Modify: `src/ui/TodayScreen.tsx` (reemplaza el stub del Task 13)
 - Test: `src/ui/TodayScreen.test.tsx`
