@@ -34,9 +34,25 @@ export function HistoryScreen() {
     setCeldas(buildHeatmap(habit, mapa, desde, hasta));
   }, [habit]);
 
+  // Efecto separado de recargarEntradas: al cambiar de hábito rápidamente, una
+  // resolución de mapaDeEntries más lenta para el hábito anterior podría llegar
+  // después de la del hábito nuevo y pisar entradas/celdas con datos obsoletos.
   useEffect(() => {
-    void recargarEntradas();
-  }, [recargarEntradas]);
+    let cancelado = false;
+    async function cargar() {
+      if (!habit) return;
+      const mapa = await mapaDeEntries(habit.id);
+      if (cancelado) return;
+      const hasta = fechaDeHoy();
+      const desde = addDays(hasta, -(DIAS_VISIBLES - 1));
+      setEntradas(mapa);
+      setCeldas(buildHeatmap(habit, mapa, desde, hasta));
+    }
+    void cargar();
+    return () => {
+      cancelado = true;
+    };
+  }, [habit]);
 
   if (cargando) return <p className="vacio">Cargando…</p>;
   if (habitos.length === 0) {
