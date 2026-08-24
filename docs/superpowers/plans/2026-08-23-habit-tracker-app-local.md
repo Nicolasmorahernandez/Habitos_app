@@ -3394,8 +3394,18 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
     globals: true,
+    // Zona horaria fijada: core/dates depende de la hora local y sus pruebas
+    // solo distinguen local de UTC bajo un desfase conocido y no nulo.
+    // Europe/Madrid es UTC+2 en agosto, la fecha usada en las pruebas.
+    env: { TZ: 'Europe/Madrid' },
   },
 });
+```
+
+Importante: no sustituyas el bloque `test` sin más — para cuando se llega a esta task,
+`vite.config.ts` ya tiene el `env: { TZ: 'Europe/Madrid' }` añadido durante el
+endurecimiento de la Unidad B. El bloque de arriba ya lo incluye; si en algún
+momento el fichero real difiere de esto, conserva el `TZ` en vez de sobrescribirlo.
 ```
 
 - [ ] **Step 2: Crear los iconos**
