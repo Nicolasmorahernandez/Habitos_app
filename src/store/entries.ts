@@ -1,13 +1,18 @@
 import type { EntriesByDate, Entry, IsoDate } from '../core/types';
 import { getDb } from './db';
+import { ahora } from './habits';
 
+// Dos llamadas concurrentes para el mismo [habit_id, fecha] en la misma pestaña son
+// seguras (IndexedDB serializa los put subyacentes), pero no hay garantía de que
+// "el último en escribirse" coincida con "el último en llamarse" si quien llama no
+// espera cada promesa antes de lanzar la siguiente.
 export async function marcarHabito(
   habit_id: string,
   fecha: IsoDate,
   valor: boolean | number,
 ): Promise<Entry> {
   const db = await getDb();
-  const entry: Entry = { habit_id, fecha, valor, actualizado_en: new Date().toISOString() };
+  const entry: Entry = { habit_id, fecha, valor, actualizado_en: ahora() };
   await db.put('entries', entry);
   return entry;
 }

@@ -8,7 +8,7 @@ export interface NuevoHabito {
   dias: Weekday[];
 }
 
-function ahora(): string {
+export function ahora(): string {
   return new Date().toISOString();
 }
 

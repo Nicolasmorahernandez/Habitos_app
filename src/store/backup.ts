@@ -1,4 +1,5 @@
 import type { Entry, Habit } from '../core/types';
+import { fromIsoDate } from '../core/dates';
 import { getDb } from './db';
 
 const VERSION_BACKUP = 1;
@@ -22,28 +23,33 @@ export async function exportarJSON(): Promise<string> {
 function esHabitoValido(h: unknown): h is Habit {
   if (typeof h !== 'object' || h === null) return false;
   const x = h as Record<string, unknown>;
-  return (
-    typeof x.id === 'string' && x.id.length > 0 &&
-    typeof x.nombre === 'string' &&
-    (x.tipo === 'booleano' || x.tipo === 'cantidad') &&
-    (x.objetivo === null || typeof x.objetivo === 'number') &&
-    Array.isArray(x.dias) &&
-    (x.estado === 'nuevo' || x.estado === 'consolidado' || x.estado === 'archivado') &&
-    typeof x.orden === 'number' &&
-    typeof x.creado_en === 'string' &&
-    typeof x.actualizado_en === 'string'
-  );
+  if (
+    typeof x.id !== 'string' || x.id.length === 0 ||
+    typeof x.nombre !== 'string' ||
+    !Array.isArray(x.dias) ||
+    !x.dias.every((d) => typeof d === 'number' && d >= 0 && d <= 6) ||
+    (x.estado !== 'nuevo' && x.estado !== 'consolidado' && x.estado !== 'archivado') ||
+    typeof x.orden !== 'number' ||
+    typeof x.creado_en !== 'string' ||
+    typeof x.actualizado_en !== 'string'
+  ) return false;
+
+  if (x.tipo === 'booleano') return x.objetivo === null;
+  if (x.tipo === 'cantidad') return typeof x.objetivo === 'number' && x.objetivo > 0;
+  return false;
 }
 
 function esEntryValido(e: unknown): e is Entry {
   if (typeof e !== 'object' || e === null) return false;
   const x = e as Record<string, unknown>;
-  return (
-    typeof x.habit_id === 'string' && x.habit_id.length > 0 &&
-    typeof x.fecha === 'string' &&
-    (typeof x.valor === 'boolean' || typeof x.valor === 'number') &&
-    typeof x.actualizado_en === 'string'
-  );
+  if (
+    typeof x.habit_id !== 'string' || x.habit_id.length === 0 ||
+    typeof x.fecha !== 'string' ||
+    (typeof x.valor !== 'boolean' && typeof x.valor !== 'number') ||
+    typeof x.actualizado_en !== 'string'
+  ) return false;
+
+  try { fromIsoDate(x.fecha); return true; } catch { return false; }
 }
 
 function parsear(texto: string): Backup {

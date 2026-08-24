@@ -105,4 +105,111 @@ describe('importarJSON', () => {
     await expect(importarJSON(json)).rejects.toThrow(/formato/i);
     expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
   });
+
+  it('rechaza un hábito de cantidad sin objetivo numérico', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [{
+        id: 'h1', nombre: 'Correr', tipo: 'cantidad', objetivo: null, dias: [1],
+        estado: 'nuevo', orden: 0,
+        creado_en: '2026-08-01T10:00:00.000Z', actualizado_en: '2026-08-01T10:00:00.000Z',
+      }],
+      entries: [],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
+
+  it('rechaza un hábito booleano con un objetivo numérico', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [{
+        id: 'h1', nombre: 'Meditar', tipo: 'booleano', objetivo: 5, dias: [1],
+        estado: 'nuevo', orden: 0,
+        creado_en: '2026-08-01T10:00:00.000Z', actualizado_en: '2026-08-01T10:00:00.000Z',
+      }],
+      entries: [],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
+
+  it('rechaza un hábito con un día de la semana fuera de rango (7)', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [{
+        id: 'h1', nombre: 'Correr', tipo: 'booleano', objetivo: null, dias: [7],
+        estado: 'nuevo', orden: 0,
+        creado_en: '2026-08-01T10:00:00.000Z', actualizado_en: '2026-08-01T10:00:00.000Z',
+      }],
+      entries: [],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
+
+  it('rechaza un hábito con un día de la semana fuera de rango (-1)', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [{
+        id: 'h1', nombre: 'Correr', tipo: 'booleano', objetivo: null, dias: [-1],
+        estado: 'nuevo', orden: 0,
+        creado_en: '2026-08-01T10:00:00.000Z', actualizado_en: '2026-08-01T10:00:00.000Z',
+      }],
+      entries: [],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
+
+  it('rechaza una anotación con una fecha que no es una fecha', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [],
+      entries: [{ habit_id: 'h1', fecha: 'no-es-fecha', valor: true, actualizado_en: '2026-08-24T10:00:00.000Z' }],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
+
+  it('rechaza una anotación con una fecha que no existe en el calendario', async () => {
+    await crearHabito({ nombre: 'Viejo', tipo: 'booleano', objetivo: null, dias: [1] });
+    const json = JSON.stringify({
+      version: 1,
+      habits: [],
+      entries: [{ habit_id: 'h1', fecha: '2026-02-30', valor: true, actualizado_en: '2026-08-24T10:00:00.000Z' }],
+    });
+
+    await expect(importarJSON(json)).rejects.toThrow(/formato/i);
+    expect((await listarHabitos()).map((h) => h.nombre)).toEqual(['Viejo']);
+  });
+
+  it('un ciclo completo de exportar e importar conserva hábitos y anotaciones', async () => {
+    const h = await crearHabito({ nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: [1] });
+    await marcarHabito(h.id, '2026-08-24', true);
+    const json = await exportarJSON();
+
+    globalThis.indexedDB = new IDBFactory();
+    resetDbCache();
+
+    await importarJSON(json);
+    const habitos = await listarHabitos();
+    expect(habitos).toHaveLength(1);
+    expect(habitos[0].nombre).toBe('Meditar');
+
+    const entries = await entriesDeHabito(h.id);
+    expect(entries).toHaveLength(1);
+    expect(entries[0].fecha).toBe('2026-08-24');
+    expect(entries[0].valor).toBe(true);
+  });
 });
