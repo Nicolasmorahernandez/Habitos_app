@@ -3471,6 +3471,10 @@ durante la implementación en vez de arreglados fuera de spec:
    `role="grid"`/`role="gridcell"` ni navegación 2D por teclado.
 3. (Ya resuelto) los mensajes de error de `HabitForm`/`SettingsScreen` sí tienen
    `role="alert"` desde el commit `6ded20f`.
+4. `HabitHistoryRow` (docs/superpowers/plans/2026-08-23-history-all-habits.md)
+   usa `aria-expanded` correctamente en el botón que expande/colapsa una fila,
+   pero le falta `aria-controls` apuntando al bloque que se expande —lo
+   esperable en un patrón de acordeón completo para lectores de pantalla.
 
 Ninguno bloquea el uso con lector de pantalla —los elementos son accesibles,
 solo no anuncian cambios dinámicos u ofrecen navegación optimizada—, pero
