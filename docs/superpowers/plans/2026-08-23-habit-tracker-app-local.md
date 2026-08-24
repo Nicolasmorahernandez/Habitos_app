@@ -1002,6 +1002,14 @@ cubierta.
 
 ## Task 9: Esquema de IndexedDB
 
+**Nota:** a partir de aquí los tests suelen crear varios registros como fixtures
+(`const a = ...; const b = ...`) sin leer todas las variables después, lo cual
+choca con `noUnusedLocals` del `tsconfig.app.json` que genera Vite. Se desactivó
+ese flag en el commit `7d711b2` (se mantiene `noUnusedParameters`, del que el
+código sí depende vía el prefijo `_`). Si `npx tsc -b --force` falla con
+`TS6133: '...' is declared but its value is never read` en un test, confirma
+que ese commit está aplicado antes de tocar el test.
+
 **Files:**
 - Create: `src/store/db.ts`
 
