@@ -120,4 +120,20 @@ describe('TodayScreen', () => {
       expect(screen.getByRole('img', { name: /progreso de hoy: 100%/i })).toBeDefined();
     });
   });
+
+  it('la gráfica solo cuenta los hábitos programados hoy, no todos los hábitos', async () => {
+    const otroDia = ((weekdayOf(hoy()) + 1) % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
+    await crearHabito({ nombre: 'Meditar', tipo: 'booleano', objetivo: null, dias: hoyProgramado() });
+    await crearHabito({ nombre: 'Gimnasio', tipo: 'booleano', objetivo: null, dias: [otroDia] });
+
+    render(<TodayScreen />);
+    await userEvent.click(await screen.findByRole('button', { name: /meditar/i }));
+
+    // Si la gráfica usara `habitos` (todos) en vez de `deHoy` (solo los
+    // programados hoy), este 100% quedaría diluido por "Gimnasio", que hoy
+    // no toca. Debe seguir siendo 100%, no 50%.
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: /progreso de hoy: 100%/i })).toBeDefined();
+    });
+  });
 });
