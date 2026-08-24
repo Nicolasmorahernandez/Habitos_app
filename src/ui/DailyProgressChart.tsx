@@ -46,12 +46,12 @@ export function DailyProgressChart({ puntos, ahoraMinutos }: Props) {
         role="img"
         aria-label={`Progreso de hoy: ${Math.round(porcentajeActual)}% completado`}
       >
-        <line x1={X_INICIO} y1={Y_ARRIBA} x2={X_INICIO} y2={Y_ABAJO} className="grafica-eje" />
-        <line x1={X_INICIO} y1={Y_ABAJO} x2={X_FIN} y2={Y_ABAJO} className="grafica-eje" />
-        <text x="2" y={Y_ARRIBA + 4} className="grafica-etiqueta">100%</text>
-        <text x="8" y={Y_ABAJO + 4} className="grafica-etiqueta">0%</text>
-        <text x={X_INICIO - 4} y={Y_ABAJO + 15} className="grafica-etiqueta">00h</text>
-        <text x={X_FIN - 18} y={Y_ABAJO + 15} className="grafica-etiqueta">24h</text>
+        <line x1={X_INICIO} y1={Y_ARRIBA} x2={X_INICIO} y2={Y_ABAJO} className="grafica-eje" aria-hidden="true" />
+        <line x1={X_INICIO} y1={Y_ABAJO} x2={X_FIN} y2={Y_ABAJO} className="grafica-eje" aria-hidden="true" />
+        <text x="2" y={Y_ARRIBA + 4} className="grafica-etiqueta" aria-hidden="true">100%</text>
+        <text x="8" y={Y_ABAJO + 4} className="grafica-etiqueta" aria-hidden="true">0%</text>
+        <text x={X_INICIO - 4} y={Y_ABAJO + 15} className="grafica-etiqueta" aria-hidden="true">00h</text>
+        <text x={X_FIN - 18} y={Y_ABAJO + 15} className="grafica-etiqueta" aria-hidden="true">24h</text>
 
         <line
           x1={xDe(ahoraMinutos)}
@@ -59,6 +59,7 @@ export function DailyProgressChart({ puntos, ahoraMinutos }: Props) {
           x2={xDe(ahoraMinutos)}
           y2={Y_ABAJO}
           className="grafica-ahora"
+          aria-hidden="true"
         />
 
         <path d={segmentos.join(' ')} className="grafica-linea" />
@@ -70,6 +71,7 @@ export function DailyProgressChart({ puntos, ahoraMinutos }: Props) {
             x2={X_FIN}
             y2={yActual}
             className="grafica-proyeccion"
+            aria-hidden="true"
           />
         )}
 
@@ -82,6 +84,7 @@ export function DailyProgressChart({ puntos, ahoraMinutos }: Props) {
           y={yActual - 6}
           className="grafica-valor"
           data-testid="grafica-valor-actual"
+          aria-hidden="true"
         >
           {Math.round(porcentajeActual)}%
         </text>
